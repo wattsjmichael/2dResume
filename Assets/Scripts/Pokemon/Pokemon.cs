@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Pokemon
 {
-    public PokemonBase Base {get; set;}
-    public int Level {get; set;}
+    public PokemonBase Base { get; set; }
+    public int Level { get; set; }
 
-    public int HP {get; set;}
+    public int HP { get; set; }
 
-    public List<Move> Moves {get; set; }
+    public List<Move> Moves { get; set; }
 
     public Pokemon(PokemonBase pBase, int pLevel)
     {
@@ -17,16 +17,15 @@ public class Pokemon
         Level = pLevel;
         HP = MaxHp;
 
-
         //generate Moves
         Moves = new List<Move>();
         foreach (var move in Base.LearnableMoves)
         {
             if (move.Level <= Level)
-            Moves.Add(new Move(move.Base));
+                Moves.Add(new Move(move.Base));
 
             if (Moves.Count >= 4)
-            break;
+                break;
         }
     }
 
@@ -53,5 +52,35 @@ public class Pokemon
     public int MaxHp
     {
         get { return Mathf.FloorToInt((Base.MaxHp * Level) / 100f) + 10; } //Same formula as pokemon
+    }
+
+    public bool TakeDamage(Move move, Pokemon attacker)
+    {
+        float critical = 1f;
+
+        if (Random.value * 100f <= 6.25f)
+            critical = 1.75f;
+
+
+        float type = TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type1) * TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type2);
+
+        float modifiers = Random.Range(.8f, 1f) * type * critical;
+        float a = (2 * attacker.Level + 10) / 250f;
+        float d = a * move.Base.Power * ((float)attacker.Attack / Defense) + 2;
+        int damage = Mathf.FloorToInt(d * modifiers);
+
+        HP -= damage;
+        if (HP <= 0)
+        {
+            HP = 0;
+            return true; //MON DEAD
+        }
+        return false; // MON ALIVE
+    }
+
+    public Move GetRandomMove()
+    {
+        int r = Random.Range(0, Moves.Count);
+        return Moves[r];
     }
 }
