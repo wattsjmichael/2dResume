@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,9 +31,11 @@ public class BattleSystem : MonoBehaviour
     int currentAction;
     int currentMove;
 
+    public event Action<bool> OnBattleOver;
+
     BattleState state;
 
-    private void Start()
+    public void StartBattle()
     {
         StartCoroutine(SetupBattle());
     }
@@ -49,7 +52,6 @@ public class BattleSystem : MonoBehaviour
         yield return (
             dialogBox.TypeDialog($"A Wild {enemyUnit.Pokemon.Base.PokeName} appeared!!!")
         );
-        yield return new WaitForSeconds(1f);
 
         PlayerAction();
     }
@@ -78,14 +80,21 @@ public class BattleSystem : MonoBehaviour
             $"{playerUnit.Pokemon.Base.PokeName} used {move.Base.MoveName}"
         );
 
+        playerUnit.PlayAttackAnimation();
         yield return new WaitForSeconds(1f);
 
-        bool isFainted = enemyUnit.Pokemon.TakeDamage(move, playerUnit.Pokemon);
+        enemyUnit.PlayHitAnimation();
+        var damageDetails = enemyUnit.Pokemon.TakeDamage(move, playerUnit.Pokemon);
         yield return enemyHud.UpdateHP();
+        yield return ShowDamageDetails(damageDetails);
 
-        if (isFainted)
+        if (damageDetails.Fainted)
         {
             yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.PokeName} is dead");
+            enemyUnit.PlayFaintAnimation();
+
+            yield return new WaitForSeconds(2.0f);
+            OnBattleOver(true);
         }
         else
         {
@@ -103,14 +112,21 @@ public class BattleSystem : MonoBehaviour
             $"{enemyUnit.Pokemon.Base.PokeName} used {move.Base.MoveName}"
         );
 
+        enemyUnit.PlayAttackAnimation();
         yield return new WaitForSeconds(1f);
 
-        bool isFainted = playerUnit.Pokemon.TakeDamage(move, enemyUnit.Pokemon);
+        playerUnit.PlayHitAnimation();
+        var damageDetails = playerUnit.Pokemon.TakeDamage(move, enemyUnit.Pokemon);
         yield return playerHud.UpdateHP();
+        yield return ShowDamageDetails(damageDetails);
 
-        if (isFainted)
+        if (damageDetails.Fainted)
         {
             yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.PokeName} is dead");
+            playerUnit.PlayFaintAnimation();
+
+            yield return new WaitForSeconds(2.0f);
+            OnBattleOver(false);
         }
         else
         {
@@ -118,7 +134,18 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    private void Update()
+    IEnumerator ShowDamageDetails(DamageDetails damageDetails)
+    {
+        if (damageDetails.Critical > 1f)
+            yield return dialogBox.TypeDialog("A Critical Hit!");
+
+        if (damageDetails.TypeEffectiveness > 1f)
+            yield return dialogBox.TypeDialog("It's Super Effective!!!");
+        else if (damageDetails.TypeEffectiveness < 1f)
+            yield return dialogBox.TypeDialog("It's Not Effective!!!");
+    }
+
+    public void HandleUpdate()
     {
         if (state == BattleState.PlayerAction)
         {
