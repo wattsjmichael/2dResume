@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void HandledUpdate()
+    public void HandleUpdate()
     {
         if (!isMoving)
         {
@@ -80,8 +80,8 @@ public class PlayerController : MonoBehaviour
          if (Physics2D.OverlapCircle(transform.position, 0.2f, grassLayer) != null)
          {
             if (UnityEngine.Random.Range(1, 101) <= 12)
-            {  
-                animator.SetBool("isMoving", false); 
+            {   
+                animator.SetBool("isMoving", false);
                 OnEncountered();
             }
          }

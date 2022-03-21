@@ -28,24 +28,46 @@ public class MoveBase : ScriptableObject
     {
         get { return moveName; }
     }
-      public string Description
+    public string Description
     {
         get { return description; }
     }
-      public PokemonType Type
+    public PokemonType Type
     {
         get { return type; }
     }
-       public int Power
+    public int Power
     {
         get { return power; }
     }
-       public int Accuracy
+    public int Accuracy
     {
         get { return accuracy; }
     }
-        public int PP
+    public int PP
     {
         get { return pp; }
+    }
+
+    public bool IsSpecial
+    {
+        get
+        {
+            if (
+                type == PokemonType.Fire
+                || type == PokemonType.Water
+                || type == PokemonType.Grass
+                || type == PokemonType.Ice
+                || type == PokemonType.Electric
+                || type == PokemonType.Dragon
+            )
+            {
+                return true;
+            }
+            else
+            { 
+                return false;
+            }
+        }
     }
 }

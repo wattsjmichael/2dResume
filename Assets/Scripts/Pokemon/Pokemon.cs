@@ -2,19 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Pokemon
 {
-    public PokemonBase Base { get; set; }
-    public int Level { get; set; }
+    [SerializeField]
+    PokemonBase _base;
+
+    [SerializeField]
+    int level;
+    public PokemonBase Base
+    {
+        get { return _base; }
+    }
+    public int Level
+    {
+        get { return level; }
+    }
 
     public int HP { get; set; }
 
     public List<Move> Moves { get; set; }
 
-    public Pokemon(PokemonBase pBase, int pLevel)
+    public void Init()
     {
-        Base = pBase;
-        Level = pLevel;
+       
         HP = MaxHp;
 
         //generate Moves
@@ -53,10 +64,7 @@ public class Pokemon
     {
         get { return Mathf.FloorToInt((Base.MaxHp * Level) / 100f) + 10; } //Same formula as pokemon
     }
-    public int damage
-    {
-        get; set;
-    }
+    public int damage { get; set; }
 
     public DamageDetails TakeDamage(Move move, Pokemon attacker)
     {
@@ -65,24 +73,27 @@ public class Pokemon
         if (Random.value * 100f <= 6.25f)
             critical = 1.75f;
 
-
-        float type = TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type1) * TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type2);
+        float type =
+            TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type1)
+            * TypeChart.GetEffectiveness(move.Base.Type, this.Base.Type2);
 
         var damageDetails = new DamageDetails()
         {
-           TypeEffectiveness = type,
-           Critical = critical,
-           Fainted = false
+            TypeEffectiveness = type,
+            Critical = critical,
+            Fainted = false
         };
+
+        float attack = (move.Base.IsSpecial) ? attacker.SpAttack : attacker.Attack; //IF_ELSE Conditional
+        float defense = (move.Base.IsSpecial) ? attacker.SpDefense : Defense;
 
         // Debug.Log(type);
         float modifiers = Random.Range(.8f, 1f) * critical * type;
-       //* type * critical;
+        //* type * critical;
         float a = (2 * attacker.Level + 10) / 250f;
-        float d = a * move.Base.Power * ((float)attacker.Attack / Defense) + 2;
-       
+        float d = a * move.Base.Power * ((float)attack / Defense) + 2;
+
         int damage = Mathf.FloorToInt(d * modifiers);
-        
 
         HP -= damage;
         if (HP <= 0)
@@ -98,12 +109,12 @@ public class Pokemon
         int r = Random.Range(0, Moves.Count);
         return Moves[r];
     }
-
 }
-    public class DamageDetails
-    {
-        public bool Fainted {get; set;}
 
-        public float Critical {get; set;}
-        public float TypeEffectiveness {get; set;}
-    }
+public class DamageDetails
+{
+    public bool Fainted { get; set; }
+
+    public float Critical { get; set; }
+    public float TypeEffectiveness { get; set; }
+}
