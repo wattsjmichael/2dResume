@@ -15,6 +15,10 @@ MonoBehaviour:
   moveName: Vine Whip
   description: 
   type: 8
-  power: 0
-  accuracy: 0
-  pp: 0
+  power: 10
+  accuracy: 90
+  pp: 20
+  category: 1
+  effects:
+    boosts: []
+  target: 0
