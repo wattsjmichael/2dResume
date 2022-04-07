@@ -18,6 +18,29 @@ public class Pokemon
     {
         get { return level; }
     }
+    public int Attack
+    {
+        get { return GetStat(Stat.Attack); } //Same formula as pokemon
+    }
+    public int Defense
+    {
+        get { return GetStat(Stat.Defense); } //Same formula as pokemon
+    }
+    public int SpAttack
+    {
+        get { return GetStat(Stat.SpAttack); } //Same formula as pokemon
+    }
+    public int SpDefense
+    {
+        get { return GetStat(Stat.SpDefense); } //Same formula as pokemon
+    }
+    public int Speed
+    {
+        get { return GetStat(Stat.Speed); } //Same formula as pokemon
+    }
+    public int MaxHp { get; private set; } //Same formula as pokemon
+
+    public int damage { get; set; }
 
     public int HP { get; set; }
 
@@ -25,12 +48,13 @@ public class Pokemon
     public Dictionary<Stat, int> Stats { get; private set; }
     public Dictionary<Stat, int> StatBoosts { get; private set; }
 
-    public Condition Status {get; private set;}
+    public int StatusTime {get; set;}
+
+    public Condition Status { get; private set; }
 
     public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
 
-    public bool HpChanged {get; set;}
-
+    public bool HpChanged { get; set; }
 
     public void Init()
     {
@@ -50,8 +74,6 @@ public class Pokemon
         HP = MaxHp;
 
         ResetStatBoost();
-
-        
     }
 
     void CalculateStats()
@@ -100,7 +122,6 @@ public class Pokemon
         }
     }
 
-
     void ResetStatBoost()
     {
         StatBoosts = new Dictionary<Stat, int>()
@@ -112,32 +133,6 @@ public class Pokemon
             { Stat.Speed, 0 },
         };
     }
-
-
-
-    public int Attack
-    {
-        get { return GetStat(Stat.Attack); } //Same formula as pokemon
-    }
-    public int Defense
-    {
-        get { return GetStat(Stat.Defense); } //Same formula as pokemon
-    }
-    public int SpAttack
-    {
-        get { return GetStat(Stat.SpAttack); } //Same formula as pokemon
-    }
-    public int SpDefense
-    {
-        get { return GetStat(Stat.SpDefense); } //Same formula as pokemon
-    }
-    public int Speed
-    {
-        get { return GetStat(Stat.Speed); } //Same formula as pokemon
-    }
-    public int MaxHp { get; private set; } //Same formula as pokemon
-
-    public int damage { get; set; }
 
     public DamageDetails TakeDamage(Move move, Pokemon attacker)
     {
@@ -173,17 +168,18 @@ public class Pokemon
         return damageDetails; // MON ALIVE
     }
 
-public void UpdateHP(int damage)
-{
-    HP = Mathf.Clamp(HP- damage, 0, MaxHp);
-    HpChanged = true;
-}    
+    public void UpdateHP(int damage)
+    {
+        HP = Mathf.Clamp(HP - damage, 0, MaxHp);
+        HpChanged = true;
+    }
 
-public void SetStatus(ConditionID conditionID)
-{
-    Status = ConditionsDB.Conditions[conditionID];
-    StatusChanges.Enqueue($"{Base.PokeName} {Status.StartMessage}");
-}
+    public void SetStatus(ConditionID conditionID)
+    {
+        Status = ConditionsDB.Conditions[conditionID];
+        Status?.OnStart?.Invoke(this); //Null conditional operator
+        StatusChanges.Enqueue($"{Base.PokeName} {Status.StartMessage}");
+    }
 
     public Move GetRandomMove()
     {
@@ -194,6 +190,20 @@ public void SetStatus(ConditionID conditionID)
     public void OnAfterTurn()
     {
         Status?.OnAfterTurn?.Invoke(this); //Calls action if not null
+    }
+
+    public bool OnBeforeMove()
+    {
+        if (Status?.OnBeforeMove != null)
+        {
+            return Status.OnBeforeMove(this);
+        }
+        return true;
+    }
+
+    public void CureStatus()
+    {
+        Status = null;
     }
 
     public void OnBattleOver()

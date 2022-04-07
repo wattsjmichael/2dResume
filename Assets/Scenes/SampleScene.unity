@@ -2567,7 +2567,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wildPokemons:
-  - _base: {fileID: 11400000, guid: c315dacca33023d48a8630c4d454b40a, type: 2}
+  - _base: {fileID: 11400000, guid: eeb1e1821001c05478bc2e68467432ee, type: 2}
     level: 3
 --- !u!1 &826786652
 GameObject:
@@ -4006,7 +4006,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 4b8b6386a3ed9534ba5ba611634ce86b, type: 3}
     m_FontSize: 40
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 4
     m_MaxSize: 40
     m_Alignment: 0
@@ -8547,8 +8547,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pokemons:
-  - _base: {fileID: 11400000, guid: c315dacca33023d48a8630c4d454b40a, type: 2}
-    level: 5
+  - _base: {fileID: 11400000, guid: eeb1e1821001c05478bc2e68467432ee, type: 2}
+    level: 12
   - _base: {fileID: 11400000, guid: 11e90ad3810ce194ead5c4f01d799a9b, type: 2}
     level: 5
   - _base: {fileID: 11400000, guid: fa64c7aee7700814486047cc30e4ff29, type: 2}

@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 517d53e630161ac4d9cbb2fabcbe8291, type: 3}
-  m_Name: Ember
+  m_Name: Bee Sting
   m_EditorClassIdentifier: 
-  moveName: Ember
+  moveName: Bee Sting
   description: 
-  type: 2
+  type: 1
   power: 0
   accuracy: 100
   pp: 10
   category: 2
   effects:
     boosts: []
-    status: 2
+    status: 4
   target: 0

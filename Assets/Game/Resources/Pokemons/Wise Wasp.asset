@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 549db66a8be190a41b615fbf380ced00, type: 3}
-  m_Name: Accountable Ant
+  m_Name: Wise Wasp
   m_EditorClassIdentifier: 
-  pokeName: Accountable Ant
+  pokeName: Wise Wasp
   description: 
-  frontSprite: {fileID: 21300000, guid: 8a0cf7a0c6bf51642acc0d5889a15e59, type: 3}
-  backSprite: {fileID: 21300000, guid: f5d52ac2baf4a1e408a3b557676ac363, type: 3}
-  type1: 1
-  type2: 1
-  maxHp: 10
-  attack: 6
-  defense: 6
-  spAttack: 6
-  spDefense: 6
-  speed: 6
+  frontSprite: {fileID: 21300000, guid: d3b1cc1fea7ef5e43b470c36314b5dfd, type: 3}
+  backSprite: {fileID: 21300000, guid: 5e13202622bb2044783c069605107bd3, type: 3}
+  type1: 10
+  type2: 12
+  maxHp: 13
+  attack: 14
+  defense: 17
+  spAttack: 9
+  spDefense: 9
+  speed: 7
   learnableMoves:
-  - moveBase: {fileID: 11400000, guid: e1f436ab4e06e2a4b90e1c45a16420cf, type: 2}
+  - moveBase: {fileID: 11400000, guid: 0a8e14e11afa188429aee3a20c7c0efa, type: 2}
     level: 1
   - moveBase: {fileID: 11400000, guid: 3dadb03a4c6200749a72d78bb09e9d55, type: 2}
-    level: 1
+    level: 3
