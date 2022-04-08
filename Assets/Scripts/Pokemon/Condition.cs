@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Condition : MonoBehaviour
+public class Condition
 {
    public string CondName {get; set;}
    public string Description {get; set;}
    public string StartMessage {get; set;}
+
+   public ConditionID Id {get; set;}
 
     public Action<Pokemon> OnStart {get; set;}
 

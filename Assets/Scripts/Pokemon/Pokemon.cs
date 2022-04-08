@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,6 +57,8 @@ public class Pokemon
 
     public bool HpChanged { get; set; }
 
+    public event System.Action OnStatusChanged;
+
     public void Init()
     {
         HP = MaxHp;
@@ -85,7 +88,7 @@ public class Pokemon
         Stats.Add(Stat.SpDefense, Mathf.FloorToInt((Base.SpDefense * Level) / 100f) + 5);
         Stats.Add(Stat.Speed, Mathf.FloorToInt((Base.Speed * Level) / 100f) + 5);
 
-        MaxHp = Mathf.FloorToInt((Base.MaxHp * Level) / 100f) + 10;
+        MaxHp = Mathf.FloorToInt((Base.MaxHp * Level) / 100f) + 10 + Level;
     }
 
     int GetStat(Stat stat)
@@ -174,18 +177,13 @@ public class Pokemon
         HpChanged = true;
     }
 
-    public void SetStatus(ConditionID conditionID)
-    {
-        Status = ConditionsDB.Conditions[conditionID];
-        Status?.OnStart?.Invoke(this); //Null conditional operator
-        StatusChanges.Enqueue($"{Base.PokeName} {Status.StartMessage}");
-    }
-
     public Move GetRandomMove()
     {
         int r = Random.Range(0, Moves.Count);
         return Moves[r];
     }
+
+
 
     public void OnAfterTurn()
     {
@@ -201,9 +199,23 @@ public class Pokemon
         return true;
     }
 
+        public void SetStatus(ConditionID conditionID)
+    {
+        if (Status != null)
+        {
+            return;
+        }
+
+        Status = ConditionsDB.Conditions[conditionID];
+        Status?.OnStart?.Invoke(this); //Null conditional operator
+        StatusChanges.Enqueue($"{Base.PokeName} {Status.StartMessage}");
+        OnStatusChanged?.Invoke();
+    }
+
     public void CureStatus()
     {
         Status = null;
+        OnStatusChanged?.Invoke();
     }
 
     public void OnBattleOver()

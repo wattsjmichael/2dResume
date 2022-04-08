@@ -20,6 +20,11 @@ public class GameController : MonoBehaviour
     Camera worldCamera;
     GameState state;
 
+    private void Awake()
+    {
+        ConditionsDB.Init();
+    }
+
     private void Start()
     {
         playerController.OnEncountered += StartBattle;
