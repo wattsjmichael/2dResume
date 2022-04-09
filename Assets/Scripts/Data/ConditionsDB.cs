@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ConditionsDB : MonoBehaviour
 {
-
     public static void Init()
     {
         foreach (var kvp in Conditions)
@@ -13,10 +12,9 @@ public class ConditionsDB : MonoBehaviour
             var condition = kvp.Value;
 
             condition.Id = conditionId;
-
-         
         }
     }
+
     public static Dictionary<ConditionID, Condition> Conditions { get; set; } =
         new Dictionary<ConditionID, Condition>()
         {
@@ -111,6 +109,42 @@ public class ConditionsDB : MonoBehaviour
                         return false;
                     }
                 }
+            },
+            {
+                ConditionID.confusion,
+                new Condition()
+                {
+                    CondName = "Confusion",
+                    StartMessage = "is confused",
+                    OnStart = (Pokemon pokemon) =>
+                    {
+                        //confused for 1 -4 turns
+                        pokemon.VolatileStatusTime = Random.Range(1, 5);
+                        Debug.Log(pokemon.VolatileStatusTime);
+                    },
+                    OnBeforeMove = (Pokemon pokemon) =>
+                    {
+                        if (pokemon.VolatileStatusTime <= 0)
+                        {
+                            pokemon.CureVolatileStatus();
+                            pokemon.StatusChanges.Enqueue(
+                                $"{pokemon.Base.PokeName} kicked out of confusion"
+                            );
+                            return true;
+                        }
+
+                        pokemon.VolatileStatusTime--;
+
+                        //50% chance to perform the move
+                        if (Random.Range(1, 3) == 1)
+                            return true;
+
+                        pokemon.StatusChanges.Enqueue($"{pokemon.Base.PokeName} is confused");
+                        pokemon.UpdateHP(pokemon.MaxHp/8);
+                        pokemon.StatusChanges.Enqueue($"{pokemon.Base.PokeName} hit itself");
+                        return false;
+                    }
+                }
             }
         };
 }
@@ -122,5 +156,6 @@ public enum ConditionID
     brn,
     slp,
     par,
-    frz
+    frz,
+    confusion
 }

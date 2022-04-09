@@ -22,6 +22,9 @@ public class MoveBase : ScriptableObject
     int accuracy;
 
     [SerializeField]
+    bool alwaysHits;
+
+    [SerializeField]
     int pp;
 
     [SerializeField]
@@ -29,6 +32,9 @@ public class MoveBase : ScriptableObject
 
     [SerializeField]
     MoveEffects effects;
+
+     [SerializeField]
+    List<SecondaryEffects> secondaryeffects;
 
     [SerializeField]
     MoveTarget target;
@@ -40,6 +46,10 @@ public class MoveBase : ScriptableObject
     public MoveEffects Effects
     {
         get { return effects; }
+    }
+     public List<SecondaryEffects> SecondaryEffects
+    {
+        get { return secondaryeffects; }
     }
     public MoveTarget Target
     {
@@ -69,6 +79,10 @@ public class MoveBase : ScriptableObject
     {
         get { return pp; }
     }
+      public bool AlwaysHits
+    {
+        get { return alwaysHits; }
+    }
 }
 
 [System.Serializable]
@@ -77,7 +91,11 @@ public class MoveEffects
     [SerializeField]
     List<StatBoost> boosts;
 
-    [SerializeField] ConditionID status;
+    [SerializeField]
+    ConditionID status;
+
+    [SerializeField]
+    ConditionID volatileStatus;
 
     public List<StatBoost> Boosts
     {
@@ -86,8 +104,28 @@ public class MoveEffects
 
     public ConditionID Status
     {
-        get {return status;}
+        get { return status; }
     }
+
+    public ConditionID VolatileStatus
+    {
+        get { return volatileStatus; }
+    }
+}
+
+[System.Serializable]
+public class SecondaryEffects : MoveEffects
+{
+    [SerializeField] int chance;
+    [SerializeField] MoveTarget target;
+
+    public int Chance {
+        get {return chance;}
+    }
+    public MoveTarget Target {
+        get {return target;}
+    }
+
 }
 
 [System.Serializable]

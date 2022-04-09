@@ -1,5 +1,4 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -49,7 +48,10 @@ public class Pokemon
     public Dictionary<Stat, int> Stats { get; private set; }
     public Dictionary<Stat, int> StatBoosts { get; private set; }
 
-    public int StatusTime {get; set;}
+    public int StatusTime { get; set; }
+
+    public Condition VolatileStatus { get; private set; }
+    public int VolatileStatusTime { get; set; }
 
     public Condition Status { get; private set; }
 
@@ -77,6 +79,8 @@ public class Pokemon
         HP = MaxHp;
 
         ResetStatBoost();
+        Status = null;
+        VolatileStatus = null;
     }
 
     void CalculateStats()
@@ -134,6 +138,8 @@ public class Pokemon
             { Stat.SpAttack, 0 },
             { Stat.SpDefense, 0 },
             { Stat.Speed, 0 },
+            { Stat.Accuracy, 0 },
+            { Stat.Evasion, 0 },
         };
     }
 
@@ -183,23 +189,31 @@ public class Pokemon
         return Moves[r];
     }
 
-
-
     public void OnAfterTurn()
     {
-        Status?.OnAfterTurn?.Invoke(this); //Calls action if not null
+        Status?.OnAfterTurn?.Invoke(this);
+        VolatileStatus?.OnAfterTurn?.Invoke(this); //Calls action if not null
     }
 
     public bool OnBeforeMove()
     {
+        bool canPerformMove = true;
+
         if (Status?.OnBeforeMove != null)
         {
-            return Status.OnBeforeMove(this);
+            if (!Status.OnBeforeMove(this))
+                canPerformMove = false;
         }
-        return true;
+
+        if (VolatileStatus?.OnBeforeMove != null)
+        {
+            if (!VolatileStatus.OnBeforeMove(this))
+                canPerformMove = false;
+        }
+        return canPerformMove;
     }
 
-        public void SetStatus(ConditionID conditionID)
+    public void SetStatus(ConditionID conditionID)
     {
         if (Status != null)
         {
@@ -218,8 +232,26 @@ public class Pokemon
         OnStatusChanged?.Invoke();
     }
 
+    public void SetVolatileStatus(ConditionID conditionID)
+    {
+        if (VolatileStatus != null)
+        {
+            return;
+        }
+
+        VolatileStatus = ConditionsDB.Conditions[conditionID];
+        VolatileStatus?.OnStart?.Invoke(this); //Null conditional operator
+        StatusChanges.Enqueue($"{Base.PokeName} {VolatileStatus.StartMessage}");
+    }
+
+    public void CureVolatileStatus()
+    {
+        VolatileStatus = null;
+    }
+
     public void OnBattleOver()
     {
+        VolatileStatus = null;
         ResetStatBoost();
     }
 }
