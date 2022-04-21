@@ -69,7 +69,7 @@ public class BattleDialogBox : MonoBehaviour
 
     public void UpdateActionSelection(int selectedAction)
     {
-        for (int i = 0; i < actionTexts.Count; i++ )
+        for (int i = 0; i < actionTexts.Count; i++)
         {
             if (i == selectedAction)
             {
@@ -84,9 +84,9 @@ public class BattleDialogBox : MonoBehaviour
 
     public void UpdateMoveSelection(int selectedMove, Move move)
     {
-        for (int i=0; i<moveTexts.Count; i++)
+        for (int i = 0; i < moveTexts.Count; i++)
         {
-             if (i == selectedMove)
+            if (i == selectedMove)
             {
                 moveTexts[i].color = highlightedColor;
             }
@@ -96,17 +96,26 @@ public class BattleDialogBox : MonoBehaviour
             }
             ppText.text = $"PP {move.PP}/{move.Base.PP}";
             typeText.text = move.Base.Type.ToString();
+
+            if (move.PP == 0)
+            {
+                ppText.color = Color.red;
+            }
+            else
+            {
+                ppText.color = Color.black;
+            }
         }
     }
 
     public void SetMoveNames(List<Move> moves)
     {
-        for (int i =0; i<moveTexts.Count; i++)
+        for (int i = 0; i < moveTexts.Count; i++)
         {
-            if (i< moves.Count)
-            moveTexts[i].text = moves[i].Base.MoveName;
+            if (i < moves.Count)
+                moveTexts[i].text = moves[i].Base.MoveName;
             else
-            moveTexts[i].text = "-";
+                moveTexts[i].text = "-";
         }
     }
 }

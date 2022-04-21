@@ -43,6 +43,8 @@ public class ConditionsDB : MonoBehaviour
                     {
                         pokemon.UpdateHP(pokemon.MaxHp / 2);
                         pokemon.StatusChanges.Enqueue($"{pokemon.Base.PokeName} is being burned");
+                        // pokemon.StatusChanges.Enqueue($"{pokemon.damage} damage");
+                       
                     }
                 }
             },

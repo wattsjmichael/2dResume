@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -45,6 +46,8 @@ public class Pokemon
     public int HP { get; set; }
 
     public List<Move> Moves { get; set; }
+
+    public Move CurrentMove {get; set;}
     public Dictionary<Stat, int> Stats { get; private set; }
     public Dictionary<Stat, int> StatBoosts { get; private set; }
 
@@ -173,6 +176,8 @@ public class Pokemon
 
         int damage = Mathf.FloorToInt(d * modifiers);
 
+        // StatusChanges.Enqueue($"{attacker._base.PokeName} hit for {damage} damage!");
+
         UpdateHP(damage);
         return damageDetails; // MON ALIVE
     }
@@ -185,8 +190,9 @@ public class Pokemon
 
     public Move GetRandomMove()
     {
-        int r = Random.Range(0, Moves.Count);
-        return Moves[r];
+        var movesWithPP = Moves.Where(x => x.PP >0).ToList();
+        int r = Random.Range(0, movesWithPP.Count);
+        return movesWithPP[r];
     }
 
     public void OnAfterTurn()

@@ -28,6 +28,9 @@ public class MoveBase : ScriptableObject
     int pp;
 
     [SerializeField]
+    int priority;
+
+    [SerializeField]
     MoveCategory category;
 
     [SerializeField]
@@ -78,6 +81,11 @@ public class MoveBase : ScriptableObject
     public int PP
     {
         get { return pp; }
+    }
+
+     public int Priority
+    {
+        get { return priority; }
     }
       public bool AlwaysHits
     {
