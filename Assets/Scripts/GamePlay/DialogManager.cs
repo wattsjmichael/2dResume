@@ -36,8 +36,8 @@ public class DialogManager : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        isShowing = true;
         OnShowDialog?.Invoke();
+        isShowing = true;
         this.dialog = dialog;
         onDialogFinished = onFinished;
 

@@ -6,23 +6,23 @@ using DG.Tweening;
 
 public class BattleUnit : MonoBehaviour
 {
-  
+    [SerializeField]
+    bool isPlayerUnit;
 
-    [SerializeField] bool isPlayerUnit;
-    [SerializeField] BattleHud hud;
+    [SerializeField]
+    BattleHud hud;
 
-    public BattleHud Hud {
-        get {return hud;}
+    public BattleHud Hud
+    {
+        get { return hud; }
     }
-    
-    
-    
+
     public bool IsPlayerUnit
     {
-        get { return isPlayerUnit;}
+        get { return isPlayerUnit; }
     }
 
-
+    public Pokemon Pokemon { get; set; }
 
     Image image;
     Vector3 originalPos;
@@ -36,38 +36,39 @@ public class BattleUnit : MonoBehaviour
         originalColor = image.color;
     }
 
-    public Pokemon Pokemon { get; set; }
-
     public void Setup(Pokemon pokemon)
     {
         Pokemon = pokemon;
         if (isPlayerUnit)
             image.sprite = Pokemon.Base.BackSprite;
         else
+        {
             image.sprite = Pokemon.Base.FrontSprite;
             image.SetNativeSize();
-            hud.gameObject.SetActive(true);
-            hud.SetData(pokemon);
+        }
+        hud.gameObject.SetActive(true);
+        hud.SetData(pokemon);
 
-            image.color = originalColor;
+        transform.localScale = new Vector3(1, 1, 1);
+        image.color = originalColor;
 
-            PlayEnterAnimation();
+        PlayEnterAnimation();
     }
 
-    public void Clear(){
+    public void Clear()
+    {
         hud.gameObject.SetActive(false);
-
     }
 
     public void PlayEnterAnimation()
     {
         if (isPlayerUnit)
         {
-            image.transform.localPosition = new Vector3 (-500f, originalPos.y);
+            image.transform.localPosition = new Vector3(-500f, originalPos.y);
         }
-        else 
+        else
         {
-             image.transform.localPosition = new Vector3 (500f, originalPos.y);
+            image.transform.localPosition = new Vector3(500f, originalPos.y);
         }
 
         image.transform.DOLocalMoveX(originalPos.x, 1f);
@@ -77,9 +78,9 @@ public class BattleUnit : MonoBehaviour
     {
         var sequence = DOTween.Sequence();
         if (isPlayerUnit)
-        sequence.Append(image.transform.DOLocalMoveX(originalPos.x + 50f, .25f));
+            sequence.Append(image.transform.DOLocalMoveX(originalPos.x + 50f, .25f));
         else
-        sequence.Append(image.transform.DOLocalMoveX(originalPos.x - 50f, .25f));
+            sequence.Append(image.transform.DOLocalMoveX(originalPos.x - 50f, .25f));
 
         sequence.Append(image.transform.DOLocalMoveX(originalPos.x, .25f));
     }
@@ -98,5 +99,21 @@ public class BattleUnit : MonoBehaviour
         sequence.Join(image.DOFade(0f, .5f));
     }
 
+    public IEnumerator PlayCaptureAnimation()
+    {
+        var sequence = DOTween.Sequence();
+        sequence.Append(image.DOFade(0f, 0.5f));
+        sequence.Join(image.transform.DOLocalMoveY(originalPos.y + 50f, 0.5f));
+        sequence.Join(transform.DOScale(new Vector3(.1f, .1f, 1f), 1f));
+        yield return sequence.WaitForCompletion();
+    }
 
+       public IEnumerator PlayBreakOutAnimation()
+    {
+        var sequence = DOTween.Sequence();
+        sequence.Append(image.DOFade(1f, 0.5f));
+        sequence.Join(image.transform.DOLocalMoveY(originalPos.y, 0.5f));
+        sequence.Join(transform.DOScale(new Vector3(1f, 1f, 1f), 1f));
+        yield return sequence.WaitForCompletion();
+    }
 }

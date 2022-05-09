@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class BattleHud : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class BattleHud : MonoBehaviour
    [SerializeField] Text levelText;
    [SerializeField] HPBar hpBar;
    [SerializeField] Text statusText;
+   [SerializeField] GameObject expBar;
+
 
 
    [SerializeField] Color psnColor;
@@ -27,6 +30,7 @@ public class BattleHud : MonoBehaviour
       nameText.text = pokemon.Base.PokeName;
       levelText.text = "Lvl " + pokemon.Level;
       hpBar.SetHP((float)pokemon.HP / pokemon.MaxHp);
+      SetExp();
 
       statusColors = new Dictionary<ConditionID, Color>()
       {
@@ -64,5 +68,32 @@ public class BattleHud : MonoBehaviour
       }
    }
 
+public void SetExp()
+{
+   if (expBar == null) return;
+
+   float normalizedExp = GetNormalizedExp();
+   expBar.transform.localScale = new Vector3( normalizedExp, 1 , 1);
+
+}
+
+public IEnumerator SetExpSmooth()
+{
+   if (expBar == null)  yield break;
+
+   float normalizedExp = GetNormalizedExp();
+ yield return expBar.transform.DOScaleX(normalizedExp, 1.5f).WaitForCompletion();
+
+}
+
+float GetNormalizedExp()
+{
+   int currentLevelExp = _pokemon.Base.GetExpForLevel(_pokemon.Level);
+   int nextLevelExp = _pokemon.Base.GetExpForLevel(_pokemon.Level + 1);
+
+   float normalizedExp = (float)(_pokemon.Exp - currentLevelExp) / (nextLevelExp - currentLevelExp);
+   return Mathf.Clamp01(normalizedExp);
+
+}
 
 }

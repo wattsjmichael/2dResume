@@ -11,6 +11,16 @@ public class Pokemon
 
     [SerializeField]
     int level;
+
+
+    public Pokemon(PokemonBase pBase, int pLevel)
+    {
+        _base = pBase;
+        level = pLevel;
+
+        Init();
+
+    }
     public PokemonBase Base
     {
         get { return _base; }
@@ -45,6 +55,8 @@ public class Pokemon
 
     public int HP { get; set; }
 
+    public int Exp {get; set;}
+
     public List<Move> Moves { get; set; }
 
     public Move CurrentMove {get; set;}
@@ -58,7 +70,7 @@ public class Pokemon
 
     public Condition Status { get; private set; }
 
-    public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
+    public Queue<string> StatusChanges { get; private set; }
 
     public bool HpChanged { get; set; }
 
@@ -78,9 +90,14 @@ public class Pokemon
             if (Moves.Count >= 4)
                 break;
         }
+
+    Exp = Base.GetExpForLevel(Level);
+
         CalculateStats();
         HP = MaxHp;
 
+
+StatusChanges = new Queue<string>();
         ResetStatBoost();
         Status = null;
         VolatileStatus = null;

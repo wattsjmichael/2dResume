@@ -42,7 +42,31 @@ public class PokemonBase : ScriptableObject
     [SerializeField]
     int speed;
 
-    [SerializeField] List<LearnableMove> learnableMoves;
+    [SerializeField]
+    int expYield;
+
+    [SerializeField]
+    GrowthRate growthRate;
+
+    [SerializeField]
+    int catchRate = 255;
+
+    [SerializeField]
+    List<LearnableMove> learnableMoves;
+
+    public int GetExpForLevel(int level)
+    {
+        if (growthRate == GrowthRate.Fast)
+        {
+            return 4 * (level * level * level) /5;
+        }
+        else if (growthRate == GrowthRate.MediumFast)
+        {
+            return (level * level * level);
+        }
+        Debug.Log("DIDNT SET A GROWTHRATE");
+        return -1;
+    }
 
     public string PokeName
     {
@@ -92,26 +116,35 @@ public class PokemonBase : ScriptableObject
     {
         get { return speed; }
     }
+
+    public int CatchRate => catchRate;
+
+    public int ExpYield => expYield;
+
+    public GrowthRate GrowthRate => growthRate;
     public List<LearnableMove> LearnableMoves
     {
-        get {return learnableMoves;}
+        get { return learnableMoves; }
     }
 }
-
 
 [System.Serializable]
 public class LearnableMove
 {
-    [SerializeField]MoveBase moveBase;
-    [SerializeField] int level;
+    [SerializeField]
+    MoveBase moveBase;
 
-    public MoveBase Base {
-        get {return moveBase;}
-    }
-    public int Level {
-        get {return level;}
-    }
+    [SerializeField]
+    int level;
 
+    public MoveBase Base
+    {
+        get { return moveBase; }
+    }
+    public int Level
+    {
+        get { return level; }
+    }
 }
 
 public enum PokemonType
@@ -133,69 +166,340 @@ public enum PokemonType
     Ghost,
     Dragon
 }
-public enum Stat{
+
+public enum Stat
+{
     Attack,
     Defense,
     SpAttack,
     SpDefense,
     Speed,
 
-    
-     Accuracy,
-     Evasion
+    Accuracy,
+    Evasion
+}
+
+public enum GrowthRate
+{
+    Fast,
+    MediumFast
 }
 
 public class TypeChart
 {
     static float[][] chart =
     {
-          //            |NOR|FIR|WAT|ELE|GRA|ICE|FIG|POI|GRO|FLY|PSY|BUG|ROC|GHO|DAR|DRA|STE|FAI|
+        //            |NOR|FIR|WAT|ELE|GRA|ICE|FIG|POI|GRO|FLY|PSY|BUG|ROC|GHO|DAR|DRA|STE|FAI|
 
-     /*NOR*/ new float[]{ 1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,0.5f,0f,1f,1f,0.5f,1f},
-
-     /*FIR*/ new float[]{ 1f,0.5f,0.5f,1f,2f,2f,1f,1f,1f,1f,1f,2f,0.5f,1f,1f,0.5f,2f,1f},
-
-     /*WAT*/ new float[]{ 1f,2f,0.5f,1f,0.5f,1f,1f,1f,2f,1f,1f,1f,2f,1f,1f,0.5f,1f,1f},
-
-     /*ELE*/ new float[]{ 1f,1f,2f,0.5f,0.5f,1f,1f,1f,0f,2f,1f,1f,1f,1f,1f,0.5f,1f,1f},
-
-     /*GRA*/ new float[]{ 1f,0.5f,2f,1f,0.5f,1f,1f,0.5f,2f,0.5f,1f,0.5f,2f,1f,1f,0.5f,0.5f,1f},
-
-     /*ICE*/ new float[]{ 1f,0.5f,0.5f,1f,2f,0.5f,1f,1f,2f,2f,1f,1f,1f,1f,1f,2f,0.5f,1f},
-
-     /*FIG*/ new float[]{ 2f,1f,1f,1f,1f,2f,1f,0.5f,1f,0.5f,0.5f,0.5f,2f,0f,2f,1f,2f,0.5f},
-
-     /*POI*/ new float[]{ 1f,1f,1f,1f,2f,1f,1f,0.5f,0.5f,1f,1f,1f,0.5f,0.5f,1f,1f,0f,2f},
-
-     /*GRO*/ new float[]{ 1f,2f,1f,2f,0.5f,1f,1f,2f,0f,1f,0.5f,2f,1f,1f,1f,1f,2f,1f},
-
-     /*FLY*/ new float[]{ 1f,1f,1f,0.5f,2f,1f,2f,1f,1f,1f,1f,2f,0.5f,1f,1f,1f,0.5f,1f},
-
-     /*PSY*/ new float[]{ 1f,1f,1f,1f,1f,1f,2f,2f,1f,1f,0.5f,1f,1f,1f,0f,1f,0.5f,1f},
-
-     /*BUG*/ new float[]{ 1f,0.5f,1f,1f,2f,1f,0.5f,0.5f,1f,0.5f,2f,1f,1f,0.5f,2f,1f,0.5f,0.5f},
-
-     /*ROC*/ new float[]{ 1f,2f,1f,1f,1f,2f,0.5f,1f,0.5f,2f,1f,2f,1f,1f,1f,1f,0.5f,1f},
-
-     /*GHO*/ new float[]{ 0f,1f,1f,1f,1f,1f,1f,1f,1f,1f,2f,1f,1f,2f,0.5f,1f,1f,1f},
-
-     /*DAR*/ new float[]{ 1f,1f,1f,1f,1f,1f,0.5f,1f,1f,1f,2f,1f,1f,2f,0.5f,1f,1f,0.5f},
-
-     /*DRA*/ new float[]{ 1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,2f,0.5f,0f},
-
-     /*STE*/ new float[]{ 1f,0.5f,0.5f,0.5f,1f,2f,1f,1f,1f,1f,1f,1f,2f,1f,1f,1f,0.5f,2f},
-
-     /*FAI*/ new float[]{ 1f,0.5f,1f,1f,1f,1f,2f,0.5f,1f,1f,1f,1f,1f,1f,2f,2f,0.5f,1f}
+        /*NOR*/new float[]
+        {
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            0.5f,
+            0f,
+            1f,
+            1f,
+            0.5f,
+            1f
+        },
+        /*FIR*/new float[]
+        {
+            1f,
+            0.5f,
+            0.5f,
+            1f,
+            2f,
+            2f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            2f,
+            0.5f,
+            1f,
+            1f,
+            0.5f,
+            2f,
+            1f
+        },
+        /*WAT*/new float[]
+        {
+            1f,
+            2f,
+            0.5f,
+            1f,
+            0.5f,
+            1f,
+            1f,
+            1f,
+            2f,
+            1f,
+            1f,
+            1f,
+            2f,
+            1f,
+            1f,
+            0.5f,
+            1f,
+            1f
+        },
+        /*ELE*/new float[]
+        {
+            1f,
+            1f,
+            2f,
+            0.5f,
+            0.5f,
+            1f,
+            1f,
+            1f,
+            0f,
+            2f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            0.5f,
+            1f,
+            1f
+        },
+        /*GRA*/new float[]
+        {
+            1f,
+            0.5f,
+            2f,
+            1f,
+            0.5f,
+            1f,
+            1f,
+            0.5f,
+            2f,
+            0.5f,
+            1f,
+            0.5f,
+            2f,
+            1f,
+            1f,
+            0.5f,
+            0.5f,
+            1f
+        },
+        /*ICE*/new float[]
+        {
+            1f,
+            0.5f,
+            0.5f,
+            1f,
+            2f,
+            0.5f,
+            1f,
+            1f,
+            2f,
+            2f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            2f,
+            0.5f,
+            1f
+        },
+        /*FIG*/new float[]
+        {
+            2f,
+            1f,
+            1f,
+            1f,
+            1f,
+            2f,
+            1f,
+            0.5f,
+            1f,
+            0.5f,
+            0.5f,
+            0.5f,
+            2f,
+            0f,
+            2f,
+            1f,
+            2f,
+            0.5f
+        },
+        /*POI*/new float[]
+        {
+            1f,
+            1f,
+            1f,
+            1f,
+            2f,
+            1f,
+            1f,
+            0.5f,
+            0.5f,
+            1f,
+            1f,
+            1f,
+            0.5f,
+            0.5f,
+            1f,
+            1f,
+            0f,
+            2f
+        },
+        /*GRO*/new float[] { 1f, 2f, 1f, 2f, 0.5f, 1f, 1f, 2f, 0f, 1f, 0.5f, 2f, 1f, 1f, 1f, 1f, 2f, 1f },
+        /*FLY*/new float[]
+        {
+            1f,
+            1f,
+            1f,
+            0.5f,
+            2f,
+            1f,
+            2f,
+            1f,
+            1f,
+            1f,
+            1f,
+            2f,
+            0.5f,
+            1f,
+            1f,
+            1f,
+            0.5f,
+            1f
+        },
+        /*PSY*/new float[] { 1f, 1f, 1f, 1f, 1f, 1f, 2f, 2f, 1f, 1f, 0.5f, 1f, 1f, 1f, 0f, 1f, 0.5f, 1f },
+        /*BUG*/new float[]
+        {
+            1f,
+            0.5f,
+            1f,
+            1f,
+            2f,
+            1f,
+            0.5f,
+            0.5f,
+            1f,
+            0.5f,
+            2f,
+            1f,
+            1f,
+            0.5f,
+            2f,
+            1f,
+            0.5f,
+            0.5f
+        },
+        /*ROC*/new float[]
+        {
+            1f,
+            2f,
+            1f,
+            1f,
+            1f,
+            2f,
+            0.5f,
+            1f,
+            0.5f,
+            2f,
+            1f,
+            2f,
+            1f,
+            1f,
+            1f,
+            1f,
+            0.5f,
+            1f
+        },
+        /*GHO*/new float[] { 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 2f, 1f, 1f, 2f, 0.5f, 1f, 1f, 1f },
+        /*DAR*/new float[]
+        {
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            0.5f,
+            1f,
+            1f,
+            1f,
+            2f,
+            1f,
+            1f,
+            2f,
+            0.5f,
+            1f,
+            1f,
+            0.5f
+        },
+        /*DRA*/new float[]
+        {
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            2f,
+            0.5f,
+            0f
+        },
+        /*STE*/new float[]
+        {
+            1f,
+            0.5f,
+            0.5f,
+            0.5f,
+            1f,
+            2f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            1f,
+            2f,
+            1f,
+            1f,
+            1f,
+            0.5f,
+            2f
+        },
+        /*FAI*/new float[] { 1f, 0.5f, 1f, 1f, 1f, 1f, 2f, 0.5f, 1f, 1f, 1f, 1f, 1f, 1f, 2f, 2f, 0.5f, 1f }
     };
 
     public static float GetEffectiveness(PokemonType attackType, PokemonType defenseType)
     {
-        if (attackType == PokemonType.None || defenseType == PokemonType.None )
-        return 1;
+        if (attackType == PokemonType.None || defenseType == PokemonType.None)
+            return 1;
 
-        int row = (int)attackType -1;
-        int col = (int)defenseType -1;
+        int row = (int)attackType - 1;
+        int col = (int)defenseType - 1;
 
-        return chart [col][row];
+        return chart[col][row];
     }
 }
