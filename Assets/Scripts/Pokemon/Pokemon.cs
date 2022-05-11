@@ -277,6 +277,16 @@ StatusChanges = new Queue<string>();
         VolatileStatus = null;
         ResetStatBoost();
     }
+
+    public bool CheckForLevelUp()
+{
+    if (Exp > Base.GetExpForLevel(level + 1))
+    {
+        ++level;
+        return true;
+    }
+    return false;
+}
 }
 
 public class DamageDetails
@@ -286,3 +296,5 @@ public class DamageDetails
     public float Critical { get; set; }
     public float TypeEffectiveness { get; set; }
 }
+
+

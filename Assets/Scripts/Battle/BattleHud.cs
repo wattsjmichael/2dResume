@@ -6,94 +6,118 @@ using DG.Tweening;
 
 public class BattleHud : MonoBehaviour
 {
-   [SerializeField] Text nameText;
-   [SerializeField] Text levelText;
-   [SerializeField] HPBar hpBar;
-   [SerializeField] Text statusText;
-   [SerializeField] GameObject expBar;
+    [SerializeField]
+    Text nameText;
 
+    [SerializeField]
+    Text levelText;
 
+    [SerializeField]
+    HPBar hpBar;
 
-   [SerializeField] Color psnColor;
-   [SerializeField] Color brnColor;
-   [SerializeField] Color slpColor;
-   [SerializeField] Color frzColor;
-   [SerializeField] Color parColor;
+    [SerializeField]
+    Text statusText;
 
-   Pokemon _pokemon;
-   Dictionary<ConditionID, Color> statusColors;
+    [SerializeField]
+    GameObject expBar;
 
+    [SerializeField]
+    Color psnColor;
 
-   public void SetData(Pokemon pokemon)
-   {
-      _pokemon = pokemon;
-      nameText.text = pokemon.Base.PokeName;
-      levelText.text = "Lvl " + pokemon.Level;
-      hpBar.SetHP((float)pokemon.HP / pokemon.MaxHp);
-      SetExp();
+    [SerializeField]
+    Color brnColor;
 
-      statusColors = new Dictionary<ConditionID, Color>()
-      {
-         {ConditionID.psn, psnColor},
-         {ConditionID.brn, brnColor},
-         {ConditionID.slp, slpColor},
-         {ConditionID.frz, frzColor},
-         {ConditionID.par, parColor},
-      };
+    [SerializeField]
+    Color slpColor;
 
-      SetStatusText();
-      _pokemon.OnStatusChanged += SetStatusText;
+    [SerializeField]
+    Color frzColor;
 
-   }
-   public void SetStatusText()
-   {
-      if (_pokemon.Status == null)
-      {
-         statusText.text = "";
-      }
-      else
-      {
-         statusText.text = _pokemon.Status.Id.ToString().ToUpper();
-       
-         statusText.color = statusColors[_pokemon.Status.Id];
-      }
-   }
+    [SerializeField]
+    Color parColor;
 
-   public IEnumerator UpdateHP()
-   {
-      if (_pokemon.HpChanged)
-      {
-         yield return hpBar.SetHPSmooth((float)_pokemon.HP / _pokemon.MaxHp);
-         _pokemon.HpChanged = false;
-      }
-   }
+    Pokemon _pokemon;
+    Dictionary<ConditionID, Color> statusColors;
 
-public void SetExp()
-{
-   if (expBar == null) return;
+    public void SetData(Pokemon pokemon)
+    {
+        _pokemon = pokemon;
+        nameText.text = pokemon.Base.PokeName;
+        SetLevel();
+        hpBar.SetHP((float)pokemon.HP / pokemon.MaxHp);
+        SetExp();
 
-   float normalizedExp = GetNormalizedExp();
-   expBar.transform.localScale = new Vector3( normalizedExp, 1 , 1);
+        statusColors = new Dictionary<ConditionID, Color>()
+        {
+            { ConditionID.psn, psnColor },
+            { ConditionID.brn, brnColor },
+            { ConditionID.slp, slpColor },
+            { ConditionID.frz, frzColor },
+            { ConditionID.par, parColor },
+        };
 
-}
+        SetStatusText();
+        _pokemon.OnStatusChanged += SetStatusText;
+    }
 
-public IEnumerator SetExpSmooth()
-{
-   if (expBar == null)  yield break;
+    public void SetStatusText()
+    {
+        if (_pokemon.Status == null)
+        {
+            statusText.text = "";
+        }
+        else
+        {
+            statusText.text = _pokemon.Status.Id.ToString().ToUpper();
 
-   float normalizedExp = GetNormalizedExp();
- yield return expBar.transform.DOScaleX(normalizedExp, 1.5f).WaitForCompletion();
+            statusText.color = statusColors[_pokemon.Status.Id];
+        }
+    }
 
-}
+    public IEnumerator UpdateHP()
+    {
+        if (_pokemon.HpChanged)
+        {
+            yield return hpBar.SetHPSmooth((float)_pokemon.HP / _pokemon.MaxHp);
+            _pokemon.HpChanged = false;
+        }
+    }
 
-float GetNormalizedExp()
-{
-   int currentLevelExp = _pokemon.Base.GetExpForLevel(_pokemon.Level);
-   int nextLevelExp = _pokemon.Base.GetExpForLevel(_pokemon.Level + 1);
+    public void SetExp()
+    {
+        if (expBar == null)
+            return;
 
-   float normalizedExp = (float)(_pokemon.Exp - currentLevelExp) / (nextLevelExp - currentLevelExp);
-   return Mathf.Clamp01(normalizedExp);
+        float normalizedExp = GetNormalizedExp();
+        expBar.transform.localScale = new Vector3(normalizedExp, 1, 1);
+    }
 
-}
+    public void SetLevel()
+    {
+        levelText.text = "LVL" + _pokemon.Level;
+    }
 
+    public IEnumerator SetExpSmooth(bool reset = false)
+    {
+        if (expBar == null)
+            yield break;
+
+        if (reset)
+        {
+            expBar.transform.localScale = new Vector3(0, 1, 1);
+        }
+
+        float normalizedExp = GetNormalizedExp();
+        yield return expBar.transform.DOScaleX(normalizedExp, 1.5f).WaitForCompletion();
+    }
+
+    float GetNormalizedExp()
+    {
+        int currentLevelExp = _pokemon.Base.GetExpForLevel(_pokemon.Level);
+        int nextLevelExp = _pokemon.Base.GetExpForLevel(_pokemon.Level + 1);
+
+        float normalizedExp =
+            (float)(_pokemon.Exp - currentLevelExp) / (nextLevelExp - currentLevelExp);
+        return Mathf.Clamp01(normalizedExp);
+    }
 }

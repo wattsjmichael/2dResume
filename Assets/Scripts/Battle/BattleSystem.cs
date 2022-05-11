@@ -697,7 +697,7 @@ public class BattleSystem : MonoBehaviour
 
                 if (!faintedUnit.IsPlayerUnit)
                 {
-                    //EXP GAIN
+                //EXP GAIN
                 int expYield = faintedUnit.Pokemon.Base.ExpYield;
                 int enemyLevel = faintedUnit.Pokemon.Level;
                 float trainerBonus = (isTrainerBattle) ? 1.5f : 1f;
@@ -705,7 +705,15 @@ public class BattleSystem : MonoBehaviour
                 int expGain = Mathf.FloorToInt((expYield * enemyLevel * trainerBonus) / 7);
                 playerUnit.Pokemon.Exp += expGain;
                 yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.PokeName} gained {expGain} XP!");
-                yield return playerUnit.Hud.SetExpSmooth();    //CHECK LEVEL UP
+                yield return playerUnit.Hud.SetExpSmooth();    
+                
+                //CHECK LEVEL UP
+                while (playerUnit.Pokemon.CheckForLevelUp())
+                {
+                    playerUnit.Hud.SetLevel();
+                    yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.PokeName} grew to {playerUnit.Pokemon.Level} level!");
+                    yield return playerUnit.Hud.SetExpSmooth(true); 
+                }
 
                 yield return new WaitForSeconds(1f);
                 }
